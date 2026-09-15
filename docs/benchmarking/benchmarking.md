@@ -20,6 +20,12 @@ A seleção foi intencional: a Sympla representa uma solução ampla de gestão 
 
 **Referência para o EventFlow:** organização das informações do evento, estrutura de lotes e visão de gerenciamento.
 
+### Evidência da pesquisa
+
+<img src="evidencias/sympla_gh.jpg" alt="Tela da Sympla utilizada no benchmarking" width="320">
+
+*Figura 1 — Tela da Sympla utilizada como evidência da pesquisa. A captura demonstra a área de descoberta de eventos, busca por experiências, destaque de eventos e organização por coleções/categorias.*
+
 Fonte: https://www.sympla.com.br/ e páginas institucionais da plataforma. Pesquisa realizada em 15/09/2026.
 
 ---
@@ -39,6 +45,12 @@ Fonte: https://www.sympla.com.br/ e páginas institucionais da plataforma. Pesqu
 **Motivo da escolha:** foi selecionada por sua forte atuação em eventos acadêmicos, contexto diretamente relacionado ao público inicial proposto para o EventFlow.
 
 **Referência para o EventFlow:** organização das inscrições, controle de participantes e estrutura de eventos acadêmicos.
+
+### Evidência da pesquisa
+
+<img src="evidencias/even3_gh.jpg" alt="Tela da Even3 utilizada no benchmarking" width="320">
+
+*Figura 2 — Tela da Even3 utilizada como evidência da pesquisa. A captura demonstra a descoberta de eventos relevantes por área e a apresentação de informações como data e localização.*
 
 Fonte: https://www.even3.com.br/ e páginas institucionais da plataforma. Pesquisa realizada em 15/09/2026.
 
@@ -61,6 +73,12 @@ Fonte: https://www.even3.com.br/ e páginas institucionais da plataforma. Pesqui
 **Motivo da escolha:** a EVENTIM foi selecionada para estudar principalmente a perspectiva do comprador e a forma de apresentar opções de ingresso em um evento de grande porte.
 
 **Referência para o EventFlow:** apresentação objetiva de data/local e organização das alternativas de ingresso.
+
+### Evidência da pesquisa
+
+<img src="evidencias/eventim_gh.jpg" alt="Tela da EVENTIM utilizada no benchmarking" width="320">
+
+*Figura 3 — Página do evento Rush: Fifty Something Tour BH utilizada como evidência da pesquisa. A captura demonstra o destaque visual do evento e a apresentação imediata de informações como nome, data, horário e local.*
 
 Fonte: https://www.eventim.com.br/event/rush-fifty-something-tour-estadio-mineirao-21331264/ . Pesquisa realizada em 15/09/2026.
 
@@ -89,6 +107,6 @@ Da **Sympla**, o EventFlow utilizará como referência a gestão de eventos, lot
 
 Construir uma solução inicialmente mais simples, combinando **gestão eficiente para o organizador** com **aquisição objetiva para o participante**, sem tentar reproduzir todas as funcionalidades das plataformas analisadas.
 
-## Evidências
+# Evidências da pesquisa
 
-As capturas de tela realizadas pela equipe durante a pesquisa deverão ser armazenadas na pasta `docs/benchmarking/evidencias/`, separadas por plataforma.
+As três capturas realizadas durante a pesquisa estão armazenadas no próprio repositório em `docs/benchmarking/evidencias/` e foram incorporadas às respectivas análises acima.
