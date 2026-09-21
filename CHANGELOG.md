@@ -32,3 +32,14 @@
 - Corrigida a conexão do backend containerizado com o MySQL por hostname configurável;
 - Adicionado healthcheck do MySQL antes da inicialização do backend;
 - Adicionado volume persistente para os dados locais do MySQL.
+
+### Evolução de aderência aos requisitos
+- Categoria e Local integrados ao cadastro de eventos;
+- Tipo de ingresso separado de lote;
+- CRUD de evento ampliado com edição e exclusão condicionada;
+- Soma de lotes limitada pela capacidade do evento;
+- Compra transacional com bloqueio pessimista do lote para reduzir risco de overselling;
+- Tratamento central de erros 400/404/409;
+- Dashboard do organizador ampliado para categoria, local, tipo, lote, eventos e vendas;
+- Fluxos do participante atualizados para tipo/lote, carteira e histórico;
+- CORS preparado para o frontend publicado no GitHub Pages;
