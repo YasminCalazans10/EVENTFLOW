@@ -10,8 +10,18 @@ Este documento registra utilizações relevantes de Inteligência Artificial dur
 
 **Componente:** Discovery, benchmarking, escopo inicial e modelagem preliminar do Módulo 1.
 
-**Validação/alteração realizada:** o conteúdo foi estruturado a partir das orientações oficiais da atividade, das decisões da equipe e das referências de mercado selecionadas. A equipe permanece responsável pela revisão, validação, decisões e defesa do conteúdo apresentado.
+**Validação/alteração realizada:** conteúdo revisado e adaptado às decisões do projeto e às orientações da atividade.
+
+## Registro 02
+
+**Ferramenta:** ChatGPT
+
+**Utilização:** apoio na implementação inicial do MVP web.
+
+**Componente:** frontend React, backend Java/Spring Boot, persistência MySQL, regras de negócio, README e configuração de execução.
+
+**Validação/alteração realizada:** a implementação foi construída a partir dos requisitos oficiais do projeto e do escopo definido pela equipe. A equipe permanece responsável por revisar, executar, testar, compreender e defender o código e as decisões técnicas.
 
 ## Diretriz
 
-Novos usos relevantes de Inteligência Artificial durante o projeto deverão ser adicionados a este arquivo, informando ferramenta, utilização, componente afetado e validação/alteração realizada pela equipe.
+Novos usos relevantes de IA deverão ser adicionados a este arquivo, registrando ferramenta, utilização, componente e validação realizada pela equipe.
