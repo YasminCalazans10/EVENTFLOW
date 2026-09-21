@@ -1,0 +1,1 @@
+package br.com.eventflow.model; import jakarta.persistence.*; @Entity @Table(name="locais") public class LocalEvento { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id; public String nome; public String endereco; public Integer capacidade; }
