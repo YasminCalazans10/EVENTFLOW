@@ -1,1 +1,13 @@
-package br.com.eventflow.model; import jakarta.persistence.*; import com.fasterxml.jackson.annotation.JsonIgnore; @Entity @Table(name="usuarios") public class Usuario { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id; public String nome; @Column(unique=true) public String email; @JsonIgnore public String senhaHash; @Enumerated(EnumType.STRING) public TipoUsuario tipoUsuario; }
+package br.com.eventflow.model;
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+@Table(name="usuarios")
+public class Usuario {
+  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id;
+  public String nome;
+  @Column(unique=true) public String email;
+  @JsonIgnore public String senhaHash;
+  @Enumerated(EnumType.STRING) public TipoUsuario tipoUsuario;
+}
