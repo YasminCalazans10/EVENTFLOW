@@ -43,3 +43,11 @@
 - Dashboard do organizador ampliado para categoria, local, tipo, lote, eventos e vendas;
 - Fluxos do participante atualizados para tipo/lote, carteira e histórico;
 - CORS preparado para o frontend publicado no GitHub Pages;
+
+### Redesign comercial do frontend
+- Home reformulada como marketplace de ingressos, com hero, busca, categorias, eventos em destaque e chamada para organizadores.
+- Cards de eventos com maior hierarquia visual e comportamento responsivo.
+- Página de evento reformulada com banner, informações, organizador, seleção de tipo/lote, quantidade, resumo e confirmação.
+- Carteira de ingressos redesenhada com tickets digitais.
+- Login/cadastro e dashboard do organizador receberam identidade visual própria.
+- Frontend refatorado em API, componentes e páginas para facilitar manutenção e apresentação acadêmica.
