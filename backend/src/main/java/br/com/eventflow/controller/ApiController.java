@@ -1,103 +1,22 @@
 package br.com.eventflow.controller;
-import br.com.eventflow.model.*;
-import br.com.eventflow.repository.*;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import java.util.*;
-
-@RestController
-@RequestMapping("/api")
-@CrossOrigin(origins={"http://localhost:5173","http://127.0.0.1:5173"})
+import br.com.eventflow.model.*; import br.com.eventflow.repository.*;
+import org.springframework.web.bind.annotation.*; import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; import org.springframework.transaction.annotation.Transactional;
+import java.util.*; import java.math.BigDecimal; import java.time.LocalDateTime;
+@RestController @RequestMapping("/api") @CrossOrigin(origins={"http://localhost:5173","http://127.0.0.1:5173","https://yasmincalazans10.github.io"})
 public class ApiController {
-  private final UsuarioRepository usuarios;
-  private final EventoRepository eventos;
-  private final LoteIngressoRepository lotes;
-  private final PedidoRepository pedidos;
-  private final IngressoRepository ingressos;
-  private final BCryptPasswordEncoder encoder;
-
-  public ApiController(UsuarioRepository usuarios, EventoRepository eventos, LoteIngressoRepository lotes, PedidoRepository pedidos, IngressoRepository ingressos, BCryptPasswordEncoder encoder){
-    this.usuarios=usuarios; this.eventos=eventos; this.lotes=lotes; this.pedidos=pedidos; this.ingressos=ingressos; this.encoder=encoder;
-  }
-
-  record Auth(String nome,String email,String senha,TipoUsuario tipoUsuario){}
-  record EventoReq(String nome,String descricao,String dataHora,Integer capacidade,Long organizadorId,String categoria,String localNome,String endereco,String status){}
-  record LoteReq(String nome,java.math.BigDecimal preco,Integer quantidadeTotal,Long eventoId){}
-  record CompraReq(Long participanteId,Long loteId,Integer quantidade){}
-
-  @PostMapping("/auth/cadastro")
-  public Usuario cadastro(@RequestBody Auth r){
-    if(usuarios.findByEmail(r.email()).isPresent()) throw new RuntimeException("E-mail já cadastrado");
-    Usuario x=new Usuario();
-    x.nome=r.nome(); x.email=r.email(); x.senhaHash=encoder.encode(r.senha());
-    x.tipoUsuario=r.tipoUsuario()==null?TipoUsuario.PARTICIPANTE:r.tipoUsuario();
-    return usuarios.save(x);
-  }
-
-  @PostMapping("/auth/login")
-  public Usuario login(@RequestBody Auth r){
-    Usuario x=usuarios.findByEmail(r.email()).orElseThrow();
-    if(!encoder.matches(r.senha(),x.senhaHash)) throw new RuntimeException("Login inválido");
-    return x;
-  }
-
-  @GetMapping("/eventos")
-  public List<Evento> eventos(){ return eventos.findByStatus(StatusEvento.PUBLICADO); }
-
-  @GetMapping("/eventos/{id}")
-  public Evento evento(@PathVariable Long id){ return eventos.findById(id).orElseThrow(); }
-
-  @GetMapping("/eventos/{id}/lotes")
-  public List<LoteIngresso> lotes(@PathVariable Long id){ return lotes.findByEventoId(id); }
-
-  @GetMapping("/organizador/{id}/eventos")
-  public List<Evento> orgEventos(@PathVariable Long id){ return eventos.findByOrganizadorId(id); }
-
-  @GetMapping("/organizador/{id}/vendas")
-  public List<Pedido> vendas(@PathVariable Long id){ return pedidos.findByLoteIngressoEventoOrganizadorIdOrderByDataDesc(id); }
-
-  @GetMapping("/usuarios/{id}/historico")
-  public List<Pedido> historico(@PathVariable Long id){ return pedidos.findByParticipanteIdOrderByDataDesc(id); }
-
-  @GetMapping("/usuarios/{id}/ingressos")
-  public List<Ingresso> ingressos(@PathVariable Long id){ return ingressos.findByPedidoParticipanteId(id); }
-
-  @PostMapping("/eventos")
-  public Evento novoEvento(@RequestBody EventoReq r){
-    Usuario org=usuarios.findById(r.organizadorId()).orElseThrow();
-    if(org.tipoUsuario!=TipoUsuario.ORGANIZADOR) throw new RuntimeException("Usuário não é organizador");
-    Evento x=new Evento();
-    x.nome=r.nome(); x.descricao=r.descricao(); x.dataHora=java.time.LocalDateTime.parse(r.dataHora());
-    x.capacidade=r.capacidade(); x.status=StatusEvento.valueOf(r.status()==null?"RASCUNHO":r.status());
-    x.organizador=org; x.categoria=r.categoria(); x.localNome=r.localNome(); x.endereco=r.endereco();
-    return eventos.save(x);
-  }
-
-  @PostMapping("/lotes")
-  public LoteIngresso novoLote(@RequestBody LoteReq r){
-    Evento ev=eventos.findById(r.eventoId()).orElseThrow();
-    if(r.quantidadeTotal()>ev.capacidade) throw new RuntimeException("Quantidade excede capacidade do evento");
-    LoteIngresso x=new LoteIngresso();
-    x.nome=r.nome(); x.preco=r.preco(); x.quantidadeTotal=r.quantidadeTotal(); x.quantidadeDisponivel=r.quantidadeTotal(); x.evento=ev;
-    return lotes.save(x);
-  }
-
-  @PostMapping("/pedidos/comprar")
-  public Map<String,Object> comprar(@RequestBody CompraReq r){
-    Usuario part=usuarios.findById(r.participanteId()).orElseThrow();
-    if(part.tipoUsuario!=TipoUsuario.PARTICIPANTE) throw new RuntimeException("Apenas participantes podem adquirir ingressos");
-    LoteIngresso lote=lotes.findById(r.loteId()).orElseThrow();
-    if(r.quantidade()==null||r.quantidade()<1) throw new RuntimeException("Quantidade inválida");
-    if(!Boolean.TRUE.equals(lote.ativo)||r.quantidade()>lote.quantidadeDisponivel) throw new RuntimeException("Quantidade indisponível");
-    lote.quantidadeDisponivel-=r.quantidade();
-    if(lote.quantidadeDisponivel==0) lote.ativo=false;
-    lotes.save(lote);
-    Pedido ped=new Pedido();
-    ped.participante=part; ped.loteIngresso=lote; ped.quantidade=r.quantidade();
-    ped.valorTotal=lote.preco.multiply(java.math.BigDecimal.valueOf(r.quantidade())); ped.status="CONFIRMADO";
-    pedidos.save(ped);
-    List<Ingresso> emitidos=new ArrayList<>();
-    for(int n=0;n<r.quantidade();n++){ Ingresso ing=new Ingresso(); ing.pedido=ped; ing.evento=lote.evento; emitidos.add(ingressos.save(ing)); }
-    return Map.of("pedido",ped,"ingressos",emitidos,"quantidadeDisponivel",lote.quantidadeDisponivel);
-  }
+ private final UsuarioRepository usuarios; private final EventoRepository eventos; private final CategoriaRepository categorias; private final LocalEventoRepository locais; private final TipoIngressoRepository tipos; private final LoteIngressoRepository lotes; private final PedidoRepository pedidos; private final IngressoRepository ingressos; private final BCryptPasswordEncoder encoder;
+ public ApiController(UsuarioRepository u,EventoRepository e,CategoriaRepository c,LocalEventoRepository lo,TipoIngressoRepository t,LoteIngressoRepository l,PedidoRepository p,IngressoRepository i,BCryptPasswordEncoder en){usuarios=u;eventos=e;categorias=c;locais=lo;tipos=t;lotes=l;pedidos=p;ingressos=i;encoder=en;}
+ record Auth(String nome,String email,String senha,TipoUsuario tipoUsuario){} record EventoReq(String nome,String descricao,String dataHora,Integer capacidade,Long organizadorId,Long categoriaId,Long localId,String status){} record TipoReq(String nome,String descricao,Long eventoId){} record LoteReq(String nome,BigDecimal preco,Integer quantidadeTotal,Long eventoId,Long tipoIngressoId){} record CompraReq(Long participanteId,Long loteId,Integer quantidade){} record CategoriaReq(String nome){} record LocalReq(String nome,String endereco,Integer capacidade){}
+ private void texto(String v,String campo){if(v==null||v.isBlank())throw new IllegalArgumentException(campo+" é obrigatório");}
+ @PostMapping("/auth/cadastro") public Usuario cadastro(@RequestBody Auth r){texto(r.nome(),"Nome");texto(r.email(),"E-mail");if(r.senha()==null||r.senha().length()<6)throw new IllegalArgumentException("Senha deve possuir ao menos 6 caracteres");if(usuarios.findByEmail(r.email()).isPresent())throw new IllegalStateException("E-mail já cadastrado");Usuario x=new Usuario();x.nome=r.nome().trim();x.email=r.email().trim().toLowerCase();x.senhaHash=encoder.encode(r.senha());x.tipoUsuario=r.tipoUsuario()==null?TipoUsuario.PARTICIPANTE:r.tipoUsuario();return usuarios.save(x);}
+ @PostMapping("/auth/login") public Usuario login(@RequestBody Auth r){Usuario x=usuarios.findByEmail(r.email()==null?"":r.email().trim().toLowerCase()).orElseThrow(()->new IllegalArgumentException("E-mail ou senha inválidos"));if(r.senha()==null||!encoder.matches(r.senha(),x.senhaHash))throw new IllegalArgumentException("E-mail ou senha inválidos");return x;}
+ @GetMapping("/categorias") public List<Categoria> categorias(){return categorias.findAll();} @PostMapping("/categorias") public Categoria categoria(@RequestBody CategoriaReq r){texto(r.nome(),"Categoria");return categorias.findByNomeIgnoreCase(r.nome().trim()).orElseGet(()->{Categoria c=new Categoria();c.nome=r.nome().trim();return categorias.save(c);});}
+ @GetMapping("/locais") public List<LocalEvento> locais(){return locais.findAll();} @PostMapping("/locais") public LocalEvento local(@RequestBody LocalReq r){texto(r.nome(),"Local");texto(r.endereco(),"Endereço");if(r.capacidade()==null||r.capacidade()<1)throw new IllegalArgumentException("Capacidade inválida");LocalEvento l=new LocalEvento();l.nome=r.nome();l.endereco=r.endereco();l.capacidade=r.capacidade();return locais.save(l);}
+ @GetMapping("/eventos") public List<Evento> eventos(){return eventos.findByStatus(StatusEvento.PUBLICADO);} @GetMapping("/eventos/{id}") public Evento evento(@PathVariable Long id){return eventos.findById(id).orElseThrow();} @GetMapping("/eventos/{id}/lotes") public List<LoteIngresso> lotes(@PathVariable Long id){return lotes.findByEventoId(id);} @GetMapping("/eventos/{id}/tipos") public List<TipoIngresso> tipos(@PathVariable Long id){return tipos.findByEventoId(id);}
+ @GetMapping("/organizador/{id}/eventos") public List<Evento> orgEventos(@PathVariable Long id){return eventos.findByOrganizadorId(id);} @GetMapping("/organizador/{id}/vendas") public List<Pedido> vendas(@PathVariable Long id){return pedidos.findByLoteIngressoEventoOrganizadorIdOrderByDataDesc(id);} @GetMapping("/usuarios/{id}/historico") public List<Pedido> historico(@PathVariable Long id){return pedidos.findByParticipanteIdOrderByDataDesc(id);} @GetMapping("/usuarios/{id}/ingressos") public List<Ingresso> ingressos(@PathVariable Long id){return ingressos.findByPedidoParticipanteId(id);}
+ @PostMapping("/eventos") public Evento novoEvento(@RequestBody EventoReq r){Usuario org=usuarios.findById(r.organizadorId()).orElseThrow();if(org.tipoUsuario!=TipoUsuario.ORGANIZADOR)throw new IllegalStateException("Usuário não é organizador");texto(r.nome(),"Nome");if(r.capacidade()==null||r.capacidade()<1)throw new IllegalArgumentException("Capacidade inválida");Categoria c=categorias.findById(r.categoriaId()).orElseThrow();LocalEvento lo=locais.findById(r.localId()).orElseThrow();if(r.capacidade()>lo.capacidade)throw new IllegalStateException("Capacidade do evento excede a capacidade do local");Evento x=new Evento();x.nome=r.nome();x.descricao=r.descricao();x.dataHora=LocalDateTime.parse(r.dataHora());x.capacidade=r.capacidade();x.status=StatusEvento.valueOf(r.status()==null?"RASCUNHO":r.status());x.organizador=org;x.categoria=c;x.local=lo;return eventos.save(x);}
+ @PutMapping("/eventos/{id}") public Evento editarEvento(@PathVariable Long id,@RequestBody EventoReq r){Evento x=eventos.findById(id).orElseThrow();if(r.nome()!=null&&!r.nome().isBlank())x.nome=r.nome();if(r.descricao()!=null)x.descricao=r.descricao();if(r.dataHora()!=null)x.dataHora=LocalDateTime.parse(r.dataHora());if(r.capacidade()!=null&&r.capacidade()>0)x.capacidade=r.capacidade();if(r.categoriaId()!=null)x.categoria=categorias.findById(r.categoriaId()).orElseThrow();if(r.localId()!=null)x.local=locais.findById(r.localId()).orElseThrow();if(r.status()!=null)x.status=StatusEvento.valueOf(r.status());return eventos.save(x);} @DeleteMapping("/eventos/{id}") public void excluirEvento(@PathVariable Long id){Evento x=eventos.findById(id).orElseThrow();if(!lotes.findByEventoId(id).isEmpty())throw new IllegalStateException("Evento com lotes não pode ser excluído");eventos.delete(x);}
+ @PostMapping("/tipos") public TipoIngresso novoTipo(@RequestBody TipoReq r){Evento ev=eventos.findById(r.eventoId()).orElseThrow();texto(r.nome(),"Tipo de ingresso");TipoIngresso t=new TipoIngresso();t.nome=r.nome();t.descricao=r.descricao();t.evento=ev;return tipos.save(t);}
+ @PostMapping("/lotes") public LoteIngresso novoLote(@RequestBody LoteReq r){Evento ev=eventos.findById(r.eventoId()).orElseThrow();TipoIngresso tipo=tipos.findById(r.tipoIngressoId()).orElseThrow();if(!tipo.evento.id.equals(ev.id))throw new IllegalArgumentException("Tipo não pertence ao evento");if(r.quantidadeTotal()==null||r.quantidadeTotal()<1)throw new IllegalArgumentException("Quantidade inválida");int total=lotes.findByEventoId(ev.id).stream().mapToInt(x->x.quantidadeTotal).sum();if(total+r.quantidadeTotal()>ev.capacidade)throw new IllegalStateException("Soma dos lotes excede a capacidade do evento");LoteIngresso x=new LoteIngresso();x.nome=r.nome();x.preco=r.preco()==null?BigDecimal.ZERO:r.preco();x.quantidadeTotal=r.quantidadeTotal();x.quantidadeDisponivel=r.quantidadeTotal();x.evento=ev;x.tipoIngresso=tipo;return lotes.save(x);}
+ @Transactional @PostMapping("/pedidos/comprar") public Map<String,Object> comprar(@RequestBody CompraReq r){Usuario part=usuarios.findById(r.participanteId()).orElseThrow();if(part.tipoUsuario!=TipoUsuario.PARTICIPANTE)throw new IllegalStateException("Apenas participantes podem adquirir ingressos");if(r.quantidade()==null||r.quantidade()<1)throw new IllegalArgumentException("Quantidade inválida");LoteIngresso lote=lotes.findByIdForUpdate(r.loteId()).orElseThrow();if(lote.status!=StatusLote.ATIVO||r.quantidade()>lote.quantidadeDisponivel)throw new IllegalStateException("Quantidade indisponível");lote.quantidadeDisponivel-=r.quantidade();if(lote.quantidadeDisponivel==0)lote.status=StatusLote.ESGOTADO;lotes.save(lote);Pedido ped=new Pedido();ped.participante=part;ped.loteIngresso=lote;ped.quantidade=r.quantidade();ped.valorTotal=lote.preco.multiply(BigDecimal.valueOf(r.quantidade()));ped.status="CONFIRMADO";pedidos.save(ped);List<Ingresso> emitidos=new ArrayList<>();for(int n=0;n<r.quantidade();n++){Ingresso ing=new Ingresso();ing.pedido=ped;ing.evento=lote.evento;emitidos.add(ingressos.save(ing));}return Map.of("pedido",ped,"ingressos",emitidos,"quantidadeDisponivel",lote.quantidadeDisponivel);}
 }
