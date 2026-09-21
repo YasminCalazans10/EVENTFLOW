@@ -1,0 +1,1 @@
+package br.com.eventflow.repository; import br.com.eventflow.model.LocalEvento; import org.springframework.data.jpa.repository.JpaRepository; public interface LocalEventoRepository extends JpaRepository<LocalEvento,Long>{}
