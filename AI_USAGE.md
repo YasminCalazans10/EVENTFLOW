@@ -25,3 +25,9 @@ Este documento registra utilizações relevantes de Inteligência Artificial dur
 ## Diretriz
 
 Novos usos relevantes de IA deverão ser adicionados a este arquivo, registrando ferramenta, utilização, componente e validação realizada pela equipe.
+
+
+## Registro 03 — Evolução do MVP conforme requisitos acadêmicos
+- **Ferramenta:** ChatGPT (OpenAI)
+- **Uso:** apoio na evolução técnica do EventFlow, incluindo integração das entidades Categoria, Local e Tipo de Ingresso, CRUD de evento, validação de capacidade, compra transacional com bloqueio pessimista, tratamento de erros, evolução do dashboard e adequação do deploy do frontend.
+- **Responsabilidade da equipe:** revisar, executar, testar, compreender e defender todo o código e decisões arquiteturais utilizados no projeto.
