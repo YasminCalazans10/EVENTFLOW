@@ -1,19 +1,31 @@
 # Changelog
 
-Todas as principais alterações realizadas no projeto EventFlow serão registradas neste arquivo.
-
 ## Módulo 1
 
 ### Parcial 1
+- Estrutura inicial do repositório;
+- Discovery, benchmarking e proposta de valor;
+- Escopo inicial do MVP;
+- Regras de negócio iniciais;
+- Modelagem preliminar.
 
-- Criação e estruturação inicial do repositório;
-- Definição da apresentação do EventFlow;
-- Definição do problema e contexto;
-- Definição do público-alvo;
-- Definição da proposta de valor e diferenciais;
-- Benchmarking de Sympla, Even3 e EVENTIM;
-- Matriz comparativa e aprendizados da pesquisa;
-- Definição do escopo inicial do MVP;
-- Definição das funcionalidades prioritárias;
-- Identificação das regras de negócio iniciais;
-- Identificação preliminar das classes e seus relacionamentos.
+## Módulo 2
+
+### MVP Web
+- Estrutura do backend em Java com Spring Boot;
+- Persistência MySQL com JPA/Hibernate;
+- Cadastro e autenticação de usuário;
+- Senha armazenada com BCrypt;
+- Perfis Participante e Organizador;
+- Cadastro e consulta de eventos;
+- Cadastro de lotes de ingresso;
+- Catálogo e pesquisa no frontend;
+- Aquisição de ingressos;
+- Validação de disponibilidade;
+- Atualização da quantidade disponível;
+- Emissão de ingresso com código único;
+- Histórico do participante;
+- Carteira de ingressos;
+- Dashboard básico do organizador;
+- Layout responsivo;
+- Configuração de execução com Docker Compose.
