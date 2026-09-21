@@ -1,0 +1,1 @@
+package br.com.eventflow.model; public enum StatusEvento { RASCUNHO, PUBLICADO, ENCERRADO, CANCELADO }

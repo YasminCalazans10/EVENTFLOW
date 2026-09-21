@@ -1,0 +1,1 @@
+package br.com.eventflow.model; import jakarta.persistence.*; @Entity @Table(name="categorias") public class Categoria { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) public Long id; @Column(unique=true) public String nome; }

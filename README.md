@@ -2,63 +2,115 @@
 
 ## Seu evento, do início ao ingresso.
 
-O **EventFlow** é uma plataforma de gestão de eventos e ingressos desenvolvida para conectar organizadores e participantes em um único ambiente.
+O **EventFlow** é uma plataforma web de gestão de eventos e ingressos criada para conectar organizadores e participantes em um único ambiente.
 
-A plataforma permitirá que organizadores criem e gerenciem eventos, definam locais, datas, horários, categorias, tipos e lotes de ingressos e acompanhem reservas ou vendas. Os participantes poderão encontrar eventos, consultar informações, reservar ou adquirir ingressos e acessar posteriormente seus ingressos e histórico.
-
-## Objetivo
-
-Centralizar e simplificar o gerenciamento de eventos e ingressos, oferecendo uma experiência simples tanto para quem organiza quanto para quem participa.
-
-## Público-alvo
-
-O EventFlow possui dois públicos principais:
-
-- **Organizadores:** estudantes, instituições, empresas, produtores independentes e demais responsáveis pela realização de eventos.
-- **Participantes:** pessoas interessadas em localizar eventos, consultar informações e obter ingressos.
-
-Inicialmente, o projeto terá foco em eventos universitários e eventos de pequeno e médio porte, como palestras, workshops, minicursos, congressos, festas universitárias, shows e eventos locais.
-
-## Principais funcionalidades do MVP
+## MVP implementado
 
 ### Participante
 - Cadastro e login;
-- Visualização e pesquisa de eventos;
-- Consulta de detalhes;
-- Seleção de tipo/lote e quantidade de ingressos;
-- Reserva ou aquisição;
-- Visualização de ingressos;
-- Histórico.
+- Catálogo e pesquisa de eventos;
+- Detalhes do evento;
+- Visualização de lotes/tipos de ingresso;
+- Seleção de quantidade;
+- Aquisição com validação de disponibilidade;
+- Emissão de ingresso com identificação única;
+- Carteira de ingressos;
+- Histórico de operações.
 
 ### Organizador
 - Cadastro e login;
-- Cadastro e edição de eventos;
-- Definição de categoria, local, data, horário e capacidade;
-- Criação de tipos e lotes de ingresso;
-- Definição de preço e quantidade;
-- Acompanhamento de reservas/vendas;
-- Dashboard básico.
-
-## Benchmarking
-
-As referências selecionadas para a pesquisa inicial são:
-
-- Sympla;
-- Even3;
-- EVENTIM.
-
-## Documentação
-
-A documentação da Parcial 1 está organizada na pasta `docs/`, contemplando discovery, benchmarking, escopo do MVP e modelagem preliminar.
+- Criação de eventos;
+- Categoria, local, data, horário e capacidade;
+- Criação de lotes de ingresso;
+- Definição de preço, quantidade e disponibilidade;
+- Dashboard com resumo de eventos e vendas;
+- Acompanhamento das operações realizadas.
 
 ## Tecnologias
 
-O Backend será desenvolvido em **Java**, conforme especificação do Projeto Integrador. As demais tecnologias serão definidas e documentadas durante a evolução do Módulo 1.
+- **Frontend:** React + Vite
+- **Backend:** Java 21 + Spring Boot
+- **Banco de dados:** MySQL 8.4
+- **Persistência:** Spring Data JPA / Hibernate
+- **Segurança de senha:** BCrypt
+- **Execução local:** Docker Compose
 
-## Status
+## Estrutura
 
-**Módulo 1 — Parcial 1:** concepção inicial, pesquisa de mercado, escopo e modelagem preliminar.
+```
+EVENTFLOW/
+├── backend/
+├── frontend/
+├── docs/
+├── docker-compose.yml
+├── README.md
+├── CHANGELOG.md
+└── AI_USAGE.md
+```
+
+## Executar com Docker
+
+Na raiz do projeto:
+
+```bash
+docker compose up
+```
+
+O ambiente Docker usa o hostname interno `mysql` para a conexão do backend com o banco e aguarda o healthcheck do MySQL antes de iniciar o Spring Boot. Os dados do MySQL são persistidos no volume `eventflow_mysql_data`.
+
+Depois acesse:
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8080
+
+Para encerrar:
+
+```bash
+docker compose down
+```
+
+Para também apagar o volume local do banco e reiniciar os dados:
+
+```bash
+docker compose down -v
+```
+
+## Executar sem Docker
+
+### Banco
+Tenha um MySQL disponível. Por padrão o backend usa:
+
+- Host: `localhost`
+- Porta: `3306`
+- Banco: `eventflow`
+- Usuário: `root`
+- Senha: `root`
+
+Esses valores podem ser substituídos pelas variáveis `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` e `DB_PASSWORD`.
+
+### Backend
+```bash
+cd backend
+mvn spring-boot:run
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Regras críticas contempladas
+
+- Não permitir aquisição acima da disponibilidade do lote;
+- Não permitir criação de lote acima da capacidade do evento;
+- Atualizar a disponibilidade após a compra;
+- Encerrar o lote quando a disponibilidade chegar a zero;
+- Emitir um código único para cada ingresso;
+- Relacionar ingresso a pedido e evento existentes;
+- Armazenar senhas utilizando BCrypt.
 
 ## Projeto acadêmico
 
-Projeto Integrador desenvolvido para a disciplina de **Programação Orientada a Objetos II**, do curso de Sistemas de Informação.
+Projeto Integrador da disciplina **Programação Orientada a Objetos II**, do curso de Sistemas de Informação.

@@ -1,0 +1,1 @@
+package br.com.eventflow.repository; import br.com.eventflow.model.Categoria; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface CategoriaRepository extends JpaRepository<Categoria,Long>{ Optional<Categoria> findByNomeIgnoreCase(String nome); }

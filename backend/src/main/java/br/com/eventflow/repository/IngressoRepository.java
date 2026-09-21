@@ -1,0 +1,1 @@
+package br.com.eventflow.repository; import br.com.eventflow.model.Ingresso; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface IngressoRepository extends JpaRepository<Ingresso,Long>{List<Ingresso> findByPedidoParticipanteId(Long id);}
