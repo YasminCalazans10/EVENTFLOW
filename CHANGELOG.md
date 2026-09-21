@@ -28,4 +28,7 @@
 - Carteira de ingressos;
 - Dashboard básico do organizador;
 - Layout responsivo;
-- Configuração de execução com Docker Compose.
+- Configuração de execução com Docker Compose;
+- Corrigida a conexão do backend containerizado com o MySQL por hostname configurável;
+- Adicionado healthcheck do MySQL antes da inicialização do backend;
+- Adicionado volume persistente para os dados locais do MySQL.
