@@ -1,2 +1,18 @@
-package br.com.eventflow.repository; import br.com.eventflow.model.*; import org.springframework.data.jpa.repository.*; import jakarta.persistence.LockModeType; import java.util.*;
-public interface LoteIngressoRepository extends JpaRepository<LoteIngresso,Long>{ List<LoteIngresso> findByEventoId(Long id); @Lock(LockModeType.PESSIMISTIC_WRITE) @Query("select l from LoteIngresso l where l.id=:id") Optional<LoteIngresso> findByIdForUpdate(Long id); }
+package br.com.eventflow.repository;
+
+import br.com.eventflow.model.LoteIngresso;
+import jakarta.persistence.LockModeType;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface LoteIngressoRepository extends JpaRepository<LoteIngresso, Long> {
+    List<LoteIngresso> findByEventoId(Long id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select l from LoteIngresso l where l.id = :id")
+    Optional<LoteIngresso> findByIdForUpdate(@Param("id") Long id);
+}
